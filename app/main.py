@@ -1,44 +1,29 @@
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
 from app.api.v1.endpoints import health, generate
-from app.infrastructure.llm.model import LLMModel
-from app.services.llm_service import LLMService
 
 
-
-
-
+from app.services import create_llm_service
 
 @asynccontextmanager
-async def lifespan(app:FastAPI):
-    # STARTUP: Load Model once
-    # global llm_model, llm_service
-    print("Loading LLM Model")
+async def lifespan(app: FastAPI):
+    # Choose based on environment variable or config
+    service_type = os.getenv("LLM_SERVICE", "huggingface")  # or "local"
+    
+    print(f"Creating LLM service: {service_type}")
+    llm_service = create_llm_service(service_type)
+    
+    app.state.llm_service = llm_service
+    yield
 
-    model = LLMModel()
-    model.load()
-
-    app.state.llm_service = LLMService(model)
-
-    print("Model loaded!")
-
-    yield #App is running here
-
-    #SHUTDOWN: Cleanup
     print("Shutting down...")
-    llm_model = None
-    llm_service = None
-
-### WARNING!!!
-# This part if for running model localy which should be done with care 
-# since it will download 7 GB of model and on cpu it will take a lot of time
-
-# app = FastAPI(title="LLM Backend", lifespan=lifespan, version="0.1.0")
 
 
-app = FastAPI(title="LLM Backend", version="0.1.0")
+
+app = FastAPI(title="LLM Backend", version="0.1.0", lifespan=lifespan)
 
 
 # Base.metadata.create_all(bind=engine)

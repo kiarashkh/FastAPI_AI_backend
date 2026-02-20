@@ -5,7 +5,7 @@ from uuid import uuid4, UUID
 from datetime import datetime
 
 from ....core.constants import HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST, GENERATE_TEXT_MODEL_NAME
-from app.services.llm_service import LLMService
+from app.services.llm_interface import LLMInterface
 from app.api.dependencies import get_llm_service
 
 
@@ -44,7 +44,7 @@ class GenerateRequest(GenerateRequestBase):
 @router.post("/generate", response_model=GenerateResponse)
 async def generate_text(
     request : GenerateRequestCreate,
-    llm_service: LLMService = Depends(get_llm_service)
+    llm_service: LLMInterface = Depends(get_llm_service)
     ):
     try:
         ###logic of creating the GenerateRequest and adding it for the user
@@ -53,7 +53,7 @@ async def generate_text(
         )
 
 
-
+        # TODO: change Generated model name to what the model is actually using in runtime
         return GenerateResponse(
             generated_text=result.response,
             model_used=GENERATE_TEXT_MODEL_NAME,
