@@ -8,6 +8,11 @@ from app.api.v1.endpoints import health, generate
 
 from app.services import create_llm_service
 
+
+from dotenv import load_dotenv
+load_dotenv()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Choose based on environment variable or config

@@ -12,7 +12,7 @@ class LocalLLMService(LLMInterface):
         self.model = LLMModel(model_name)
         self.model.load()
     
-    async def generate(self, prompt: str, max_tokens: int = 100) -> tuple[str, int]:
+    async def generate(self, prompt: str, max_tokens: int = 400) -> tuple[str, int]:
         # Run CPU-bound operation in thread pool
         import asyncio
         result, tokens = await asyncio.to_thread(

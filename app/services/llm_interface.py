@@ -5,7 +5,7 @@ class LLMInterface(ABC):
     """"Abstract interface for any LLM service"""
 
     @abstractmethod
-    async def generate(self, prompt:str, max_tokens:int = 100) -> tuple[str, int]:
+    async def generate(self, prompt:str, max_tokens:int = 400) -> tuple[str, int]:
         """"
         Generate text from prompt
         returns: (generated_text, token_count)

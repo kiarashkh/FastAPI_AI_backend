@@ -1,29 +1,30 @@
 import httpx
-
-# TODO: change url names to const
-# from app.core.constants import
 from .llm_interface import LLMInterface
 from app.domain.entities.generation import Generation
 
 
 class HuggingFaceService(LLMInterface):
-    def __init__(self, api_token: str, model: str = "HuggingFaceH4/zephyr-7b-beta"):
+    def __init__(self, api_token: str, model: str = "deepseek-ai/DeepSeek-R1:fastest"):
         self.api_token = api_token
         self.model = model
-        self.base_url = f"https://api-inference.huggingface.co/models/{self.model}"
+        self.base_url = "https://router.huggingface.co/v1/chat/completions"
         self.client = httpx.AsyncClient(
             timeout=httpx.Timeout(60.0, connect=10.0)
         )
 
-    async def generate(self, prompt: str, max_tokens: int = 100) -> tuple[str, int]:
+    async def generate(self, prompt: str, max_tokens: int = 400) -> Generation:
+
         payload = {
-            "inputs": prompt,
-            "parameters": {
-                "max_new_tokens": max_tokens,
-                "return_full_text": False,
-                "temperature": 0.7,
-                "do_sample": True
-            }
+            "model": self.model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "Answer concisely."
+                },
+                {"role": "user", "content": prompt}
+            ],
+            "max_tokens": max_tokens,
+            "temperature": 0.7
         }
 
         headers = {
@@ -38,27 +39,18 @@ class HuggingFaceService(LLMInterface):
                 json=payload
             )
 
-            # Raise proper HTTP error if HF fails
             response.raise_for_status()
-
             data = response.json()
 
-            # HF sometimes returns dict with "error"
-            if isinstance(data, dict) and "error" in data:
-                raise RuntimeError(f"HuggingFace API error: {data['error']}")
+            text = data["choices"][0]["message"]["content"].strip()
 
-            # Normal generation response
-            if isinstance(data, list) and len(data) > 0:
-                text = data[0].get("generated_text", "").strip()
-            else:
-                text = str(data)
-
-            # simple token estimate (kept same structure you wanted)
             token_estimate = len(prompt.split()) + len(text.split())
 
-            generation = Generation(prompt=prompt, response=text, tokens_used=token_estimate)
-
-            return generation
+            return Generation(
+                prompt=prompt,
+                response=text,
+                tokens_used=token_estimate
+            )
 
         except httpx.HTTPStatusError as e:
             raise RuntimeError(
@@ -66,10 +58,12 @@ class HuggingFaceService(LLMInterface):
             ) from e
 
         except httpx.RequestError as e:
-            raise RuntimeError(f"Network error while calling HuggingFace: {str(e)}") from e
+            raise RuntimeError(
+                f"Network error while calling HuggingFace: {str(e)}"
+            ) from e
 
     async def get_model_name(self) -> str:
         return f"hf-{self.model}"
-    # TODO: refactor main so it closes the connection
+
     async def close(self):
         await self.client.aclose()

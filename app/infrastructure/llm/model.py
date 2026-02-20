@@ -1,4 +1,4 @@
-from transformers import AutoModelForCasualLM, Autotokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
 class LLMModel:
@@ -9,8 +9,8 @@ class LLMModel:
 
     def load(self):
         """Load LLM model"""
-        self.tokenizer = Autotokenizer.from_pretrained(self.model_name)
-        self.model = AutoModelForCasualLM.from_pretrained(
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        self.model = AutoModelForCausalLM.from_pretrained(
             self.model_name, torch_dtype=torch.float16, device_map="auto")
         
     def generate(self, prompt:str, max_tokens:int = 100):

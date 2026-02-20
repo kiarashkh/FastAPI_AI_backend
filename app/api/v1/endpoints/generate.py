@@ -15,7 +15,7 @@ max_gen_req_index = 0
 max_gen_res_index = 0
 
 class GenerateResponseBase(BaseModel):
-    generated_text : str = Field(..., min_length=2, max_length= 512, description='response of model')
+    generated_text : str = Field(..., min_length=2, max_length= 2048, description='response of model')
     model_used : str = Field(..., max_length=64, description="model used to generate text")
     tokens_used : int = Field(..., description="number of tokens used")
 
@@ -29,8 +29,8 @@ class GenerateResponse(GenerateResponseBase):
 
 
 class GenerateRequestBase(BaseModel):
-    prompt : str = Field(..., min_length=2, max_length= 512, description='Prompt of Generate Request')
-    max_tokens : int = Field(default=100, description="max number of tokens")
+    prompt : str = Field(..., min_length=2, max_length= 2048, description='Prompt of Generate Request')
+    max_tokens : int = Field(default=400, description="max number of tokens")
     temperature : float = Field(default=0.7, description="temprature for model generation")
 
 
