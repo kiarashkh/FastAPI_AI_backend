@@ -11,8 +11,6 @@ from app.api.dependencies import get_llm_service
 
 router = APIRouter()
 
-max_gen_req_index = 0
-max_gen_res_index = 0
 
 class GenerateResponseBase(BaseModel):
     generated_text : str = Field(..., min_length=2, max_length= 2048, description='response of model')

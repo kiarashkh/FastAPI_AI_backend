@@ -49,7 +49,8 @@ class HuggingFaceService(LLMInterface):
             return Generation(
                 prompt=prompt,
                 response=text,
-                tokens_used=token_estimate
+                tokens_used=token_estimate,
+                model=self.model
             )
 
         except httpx.HTTPStatusError as e:
@@ -64,6 +65,6 @@ class HuggingFaceService(LLMInterface):
 
     async def get_model_name(self) -> str:
         return f"hf-{self.model}"
-
+    # TODO: refactor main so it closes the connection
     async def close(self):
         await self.client.aclose()

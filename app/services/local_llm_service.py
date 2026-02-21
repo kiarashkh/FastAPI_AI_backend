@@ -18,7 +18,7 @@ class LocalLLMService(LLMInterface):
         result, tokens = await asyncio.to_thread(
             self.model.generate, prompt, max_tokens
         )
-        generation = Generation(prompt=prompt, response=result, tokens_used=tokens)
+        generation = Generation(prompt=prompt, response=result, tokens_used=tokens, model=self.model)
 
         return generation
     
