@@ -8,6 +8,7 @@ from app.api.v1.endpoints import health, generate
 
 from app.services import create_llm_service
 
+import app.infrastructure.models   # ensures all models register
 
 from dotenv import load_dotenv
 load_dotenv()

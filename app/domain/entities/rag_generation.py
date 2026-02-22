@@ -6,14 +6,6 @@ from uuid import UUID
 from .document import Document
 
 
-# class DocumentRef:
-#     """Join entity between RAGGeneration and Document"""
-
-#     def __init__(self, doc_id: int, relevance: float):
-#         self.doc_id = doc_id
-#         self.relevance = relevance
-
-
 class RAGGeneration(TextGeneration):
     def __init__(
         self,
@@ -23,7 +15,6 @@ class RAGGeneration(TextGeneration):
         gen_id: int | None = None,
         session_id: int | None = None,
         public_id: UUID | None = None,
-        user_id: int | None = None,
     ):
         super().__init__(
             prompt=prompt,
@@ -32,7 +23,6 @@ class RAGGeneration(TextGeneration):
             gen_id=gen_id,
             session_id=session_id,
             public_id=public_id,
-            user_id=user_id,
         )
 
         self.documents_used: List[Document] = []

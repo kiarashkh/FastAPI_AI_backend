@@ -12,7 +12,6 @@ class TextGeneration(BaseGeneration):
         gen_id: int | None = None,
         session_id: int | None = None,
         public_id: UUID | None = None,
-        user_id: int | None = None,
     ):
         super().__init__(
             prompt=prompt,
@@ -21,7 +20,6 @@ class TextGeneration(BaseGeneration):
             gen_id=gen_id,
             session_id=session_id,
             public_id=public_id,
-            user_id=user_id,
         )
 
         self.generated_text: str | None = None
